@@ -1,3 +1,0 @@
-/home/chastikov/ejudge/Module_1/B/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/chastikov/ejudge/Module_1/B/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/chastikov/ejudge/Module_1/B/cmake-build-debug/CMakeFiles/B.dir
