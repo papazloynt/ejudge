@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/chastikov/ejudge/Module_1/D/main.cpp
+iostream
+-
+string
+-
+unordered_map
+-
+unordered_set
+-
+set
+-
+queue
+-
+stack
+-
+

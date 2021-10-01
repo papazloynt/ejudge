@@ -1,0 +1,3 @@
+/home/chastikov/ejudge/test/B/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/chastikov/ejudge/test/B/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/chastikov/ejudge/test/B/cmake-build-debug/CMakeFiles/hard_sum.dir

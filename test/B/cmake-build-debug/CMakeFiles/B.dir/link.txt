@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/B.dir/hard_sum.cpp.o -o B 
