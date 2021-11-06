@@ -3,6 +3,7 @@
 #include <queue>
 #include <string>
 #include <string_view>
+#include <ostream>
 
 #define ROTATION(front, back)                      \
     Node<T>* tmp = elem->front;                    \
@@ -35,7 +36,6 @@ struct Node {
     Node(int64_t key_, const T&  data_) : left(nullptr), right(nullptr),
                                            parent(nullptr), key(key_),
                                            data(data_) {}
-  /*  ~Node() { }*/
 };
 
 template <typename T>
@@ -59,7 +59,7 @@ public:
 
     [[nodiscard]] bool empty() const { return root == nullptr; }
 
-    void print();
+    void print(std::ostream& os = std::cout);
 
 private:
     void left_rotate(Node<T>* elem) { ROTATION(right, left) }
@@ -72,7 +72,7 @@ private:
     // for erase
     Node<T>* max_without_splay(Node<T>* node);
 
-    void print_node(Node<T>* node);
+    void print_node(Node<T>* node, std::ostream& os);
 
     void del_tree(Node<T>* node) {
         if (node->left) {
@@ -210,7 +210,7 @@ std::pair<int64_t, T> SplayTree<T>::max() {
 }
 
 template <class T>
-void SplayTree<T>::print() {
+void SplayTree<T>::print(std::ostream& os) {
     std::queue<Node<T>*> q;
     q.push(root);
 
@@ -221,7 +221,7 @@ void SplayTree<T>::print() {
     while (true) {
         Node<T>* node = q.front();
         q.pop();
-        print_node(node);
+        print_node(node, os);
 
         if (node) { ++counter; }
 
@@ -236,10 +236,10 @@ void SplayTree<T>::print() {
         if (two_degree_counter == two_degree) {
             two_degree_counter = 0;
             two_degree *= 2;
-            std::cout << std::endl;
+            os << std::endl;
             if (counter >= size_) { break; }
         } else {
-            std::cout << " ";
+            os << " ";
         }
     }
 }
@@ -296,13 +296,13 @@ Node<T>* SplayTree<T>::max_without_splay(Node<T>* node) {
 }
 
 template <typename T>
-void SplayTree<T>::print_node(Node<T>* node) {
+void SplayTree<T>::print_node(Node<T>* node, std::ostream& os) {
    if (!node) {
-       std::cout << "_";
+       os << "_";
    } else if (!node->parent) {
-       std::cout << "[" << node->key << " " << node->data << "]";
+       os << "[" << node->key << " " << node->data << "]";
    } else {
-       std::cout << "[" << node->key << " " << node->data << " " << node->parent->key << "]";
+       os << "[" << node->key << " " << node->data << " " << node->parent->key << "]";
    }
 }
 
