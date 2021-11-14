@@ -5,6 +5,10 @@
 #include <algorithm>
 #include <set>
 
+// Сделать Wchar
+// Изменить дерево на сжато
+// Изменить стиль кода на красивый
+
 struct TrieNode {
     TrieNode() : is_end(false), children() {}
 
@@ -24,30 +28,31 @@ public:
     std::set<std::string> search(const std::string& word, size_t maxCost = 1) {
         // build first row
         std::vector<size_t> current_row;
-        current_row.reserve(word.size() + 1);
+        current_row.reserve(word.size() + 2);
         for (size_t i = 0; i <= word.size(); ++i) {
-            current_row[i] = i;
+            current_row.push_back(i);
         }
         // result
         std::set<std::string> result;
 
         std::string current_word;
+        std::vector<size_t> prev_row;
         // recursively search each branch of the trie
         for (const auto& child : root->children) {
-            searchRecursive(child.second, child.first, word, current_row,
+            searchRecursive(child.second, child.first, word, prev_row, current_row,
                             result, current_word, maxCost);
         }
         return result;
     }
 
     void searchRecursive(TrieNode* node, const char letter,
-                         const std::string& word, std::vector<size_t>& previous_row,
+                         const std::string& word, std::vector<size_t>& prev_prev_row, std::vector<size_t>& previous_row,
                          std::set<std::string>& result, std::string current_word,
                          size_t maxCost) {
-        size_t columns = word.size() + 1;
+        size_t columns = word.size() + 2;
         current_word.push_back(letter);
         std::vector<size_t> current_row;
-        current_row.reserve(word.size() + 1);
+        current_row.reserve(word.size() + 2);
         current_row.push_back( previous_row[0] + 1);
 
         for (size_t column = 1; column < columns; ++column) {
@@ -62,15 +67,18 @@ public:
             }
 
             current_row.push_back(std::min(std::min( insert_cost, delete_cost), replace_cost));
+            if (!prev_prev_row.empty() && column >= 2 && word[column - 2] == letter && word[column - 1] == current_word[current_word.size() - 2]) {
+                current_row[column] = std::min(current_row[column], prev_prev_row[column - 2] + 1);
+            }
         }
 
-        if (current_row[current_row.size() - 1] <= maxCost && node->is_end) {
+        if (current_row[current_row.size() - 2] <= maxCost && node->is_end) {
             result.insert(current_word);
         }
 
         if (*std::min_element(current_row.begin(), current_row.end()) <= maxCost) {
             for (const auto& child : node->children) {
-                searchRecursive(child.second, child.first, word, current_row,
+                searchRecursive(child.second, child.first, word, previous_row, current_row,
                                 result, current_word, maxCost);
             }
         }
