@@ -5,8 +5,6 @@
 #include <set>
 #include <functional>
 
-// Написать коментарии
-
 struct TrieNode {
     explicit TrieNode(std::wstring  key_, bool end = false) : key(std::move(key_)), brother(nullptr),
                                            child(nullptr), is_end(end) {}
@@ -28,29 +26,45 @@ public:
         }
     }
 
-    // Use for encapsulate
+    // Используем для инкапусуляции
     void insert(std::wstring& word);
-    // exec recursive search
+    // Заполняем первую строку расстояний (для пустой строки),
+    // и вызываем рекурсивный поиск для всех братьев корня дерева
     std::set<std::wstring> search(std::wstring& word, size_t maxCost = 1);
 private:
-
+    // P.S. Запись из Вики : Временная сложность операций поиска, добавления и удаления
+    // элемента из базисного дерева оценивается как O(k), где k — длина обрабатываемого элемента.
+    // P.S.S. Но в моей реализации (через односвязный список) я могу предположить худший случай,
+    // который зависит от количсетва узлов. Допустим я ввожу слово {$str}, в худшем случае
+    // я пройду по всем братьям корня, потом в последнем брате, перейду и пройду по всем его детям и
+    // потом у последнего ребёнка так же по всем его братьям и т.д. Таким образом я получаю сложность O(n*m)
+    // где n - длина слова, m - количество узлов в дереве.
+    // P.S.S.S. В реализации не сжатого дерева проблема решалась просто, использовал Хеш-таблицу
+    // и поэтому не приходилось проходиться по всем братьям и детям)
     TrieNode* insert(TrieNode* node, const std::wstring& word, size_t count = 0);
 
+    // Сложность O(n*m), где n - длина слова, m - количество узлов в дереве
+    // От корня, по его братьям и вниз по их детям проходим рекурсивно проверяя узлы на количество ошибок.
+    // Если ошибок становится больше 1, то дальше по этому узлу и его детям мы не идём
+    // P.S. Пользоваля данной статьёй : http://stevehanov.ca/blog/?id=114
     void searchRecursive(const TrieNode* node, const std::wstring& letters,
                          const std::wstring& word, std::vector<size_t> prev_prev_row, std::vector<size_t> previous_row,
                          std::set<std::wstring>& result, std::wstring current_word,
                          size_t maxCost);
 
-    // Take size of similar prefix for two words
+    // Вычисляет длину наибольшего общего префикса двух строк
     static size_t prefix(const std::wstring& insert_str, const std::wstring& key);
 
-    // Split for insert word with similar prefix
+    // Если длина общего префикса текущего ключа и текущей строки x больше нуля,
+    // но меньше длины ключа (второй случай недачного поиска),
+    // то надо разбить текущий узел на два, оставив в родительском узле
+    // найденный префикс, и поместив в дочерний узел p оставшуюся часть ключа
     static void split(TrieNode* node, size_t k);
 
-    // For Russian language: Upper letter -> lower letter
+    // Перевод корректки из верхней в нижнюю
     static std::wstring to_lowercase(std::wstring& str);
 
-    // Destructor function
+    // Рекурсивная функция деструктора
     void del_tree(TrieNode* node);
 
     TrieNode* root;
@@ -223,12 +237,12 @@ int main() {
                 if (str_to_print.find(str) != str_to_print.end()) {
                     std::wcout << L" - ok\n";
                 } else {
-                    std::wstring str = L" ->";
+                    std::wstring correct_words = L" ->";
                     for (const auto& print : str_to_print) {
-                        str += L" " + print + L",";
+                        correct_words += L" " + print + L",";
                     }
-                    str.pop_back();
-                    std::wcout << str << L"\n";
+                    correct_words.pop_back();
+                    std::wcout << correct_words << L"\n";
                 }
             }
         }
