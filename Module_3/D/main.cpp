@@ -94,6 +94,7 @@ private:
         for (uint64_t p = 2; p <= sieve_border; ++p) {
             if (!search_array.isExist(p)) {
                 primes.push_back(p);
+                if (primes.size() >= hash_func_number) break;
                 for (uint64_t j = p*p; j <= sieve_border; j += p)
                     search_array.add(j);
             }
