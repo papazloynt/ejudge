@@ -4,7 +4,10 @@
 #include <utility>
 #include <algorithm>
 
+// изменить поиск простых чисел
+
 #define MARSEN_31 2147483647
+#define LESS_5_BORDER 12
 
 class BitsVector {
 public:
@@ -36,7 +39,7 @@ public:
             bits(std::round(-(n * std::log2(P) / std::log(2)))),
             hash_func_number(std::round(-std::log2(P)))
             {
-                InitializeFirstPrimes();
+                initializeFirstPrimes();
             }
 
     ~FilterBloom() = default;
@@ -70,24 +73,30 @@ public:
             os << bits.isExist(bit_position);
             ++bit_position;
         }
-        os << std::endl;
     }
 
 private:
-    // Ищем до корня числа O(n*sqrt(n))
-    void InitializeFirstPrimes() {
-        uint64_t i = 1;
-        while (primes.size() <= hash_func_number) {
-            ++i;
-            bool is_prime = true;
-            for (uint64_t j = 2; j * j - 1 <= i; ++j) {
-                if (i % j == 0) {
-                    is_prime = false;
-                    break;
-                }
+    // Оцениваем приблизительное число простых чисел,
+    // для чисел не болшьших 5 это не работает,
+    // для них мы сделаем границу n в решето Эратосфена захардкоженную
+    [[nodiscard]] static uint64_t approxNumberPrime(const uint64_t& n) {
+        return static_cast<uint64_t>(n * std::log(n) + n * std::log(std::log(n)));
+    }
+
+    // Решето Эратосфена
+    void initializeFirstPrimes() {
+        uint64_t sieve_border = hash_func_number <= 5 ?
+                LESS_5_BORDER :
+                approxNumberPrime(hash_func_number);
+
+        BitsVector search_array(sieve_border + 1);
+
+        for (uint64_t p = 2; p <= sieve_border; ++p) {
+            if (!search_array.isExist(p)) {
+                primes.push_back(p);
+                for (uint64_t j = p*p; j <= sieve_border; j += p)
+                    search_array.add(j);
             }
-            if (is_prime)
-                primes.push_back(i);
         }
     }
 
@@ -137,6 +146,7 @@ int main() {
                 continue;
             } else if (command == "print") {
                 bloom.print();
+                std::cout << std::endl;
             } else {
                 std::cin >> number;
                 if (command == "add" && isCorrect(number)) {
